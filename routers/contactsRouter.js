@@ -1,22 +1,17 @@
-import express from "express";
-import {
-  getAllContacts,
-  getOneContact,
-  deleteContact,
-  createContact,
-  updateContact,
-} from "../controllers/contactsControllers.js";
-
+const express = require('express');
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", getAllContacts);
+const functions = require('../controllers/contactsControllers.js')
 
-contactsRouter.get("/:id", getOneContact);
 
-contactsRouter.delete("/:id", deleteContact);
+contactsRouter.get("/", functions.getAllContacts);
 
-contactsRouter.post("/", createContact);
+contactsRouter.get("/:id", functions.getOneContact);
 
-contactsRouter.put("/:id", updateContact);
+contactsRouter.delete("/:id", functions.deleteContact);
 
-export default contactsRouter;
+contactsRouter.post("/", functions.createContact);
+
+contactsRouter.put("/:id", functions.updateContact);
+
+module.exports = contactsRouter;
