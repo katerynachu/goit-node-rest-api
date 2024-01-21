@@ -49,13 +49,11 @@ async function removeContact(contactId) {
   }
   async function updateContact(contactId, updatedData) {
     try {
-      console.log("Updating contact with ID:", contactId);
       
       const contacts = await listContacts();
       const index = contacts.findIndex((contact) => contact.id === contactId);
 
       if (index === -1) {
-          console.log("Contact not found");
           return null;
       }
 
@@ -64,11 +62,9 @@ async function removeContact(contactId) {
 
       await fs.writeFile(contactsPath, JSON.stringify(contacts, null, 2));
 
-      console.log("Contact updated:", updatedContact);
 
       return updatedContact;
   } catch (error) {
-      console.error("Error updating contact:", error);
       throw error; 
   }
   }
