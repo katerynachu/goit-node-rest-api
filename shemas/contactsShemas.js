@@ -7,9 +7,9 @@ const Joi = require("joi");
 })
 
 const updateContactSchema = Joi.object({
-    name: Joi.string(),
-    email: Joi.string().email(),
-    phone: Joi.string(),
+    name: Joi.string().optional(),
+    email: Joi.string().email().optional(),
+    phone: Joi.string().optional()
 })
 
 module.exports = {

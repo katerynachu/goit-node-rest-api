@@ -37,11 +37,6 @@ const createContactFn = async (req, res) => {
 
 const updateContactFn = async (req, res) => {
   const { id } = req.params;
-  const { name, email, phone } = req.body;
-
-  if (!name && !email && !phone) {
-    throw HttpError(400, "Body must have at least one field");
-  }
 
   const existingContact = await contactsService.getContactById(id);
 
@@ -49,13 +44,7 @@ const updateContactFn = async (req, res) => {
     throw HttpError(404, "Contact not found");
   }
 
-  const updatedData = {
-    name: name || existingContact.name,
-    email: email || existingContact.email,
-    phone: phone || existingContact.phone,
-  };
-
-  const updatedContact = await contactsService.updateContact(id, updatedData);
+  const updatedContact = await contactsService.updateContact(id, req.body);
 
   res.json(updatedContact);
 };
