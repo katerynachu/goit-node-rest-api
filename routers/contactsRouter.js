@@ -1,18 +1,43 @@
-const express = require('express');
+const express = require("express");
+const controllerWrapp = require("../helpers/ContollerWrapp.js");
 const contactsRouter = express.Router();
-const validateBody = require('../helpers/validateBody.js')
-const {createContactSchema,updateContactSchema } = require('../shemas/contactsShemas.js')
-const {getAllContacts,getOneContact,deleteContact,createContact,updateContact} = require('../controllers/contactsControllers.js')
+const validateBody = require("../helpers/validateBody.js");
+const {
+  createContactSchema,
+  updateContactSchema,
+  updateStatusSchema,
+} = require("../models/contact.js");
+const {
+  updateContact,
+  updateStatus,
+  listContacts,
+  addContact,
+  getContactById,
+  removeContact,
+} = require("../controllers/contactsControllers.js");
 
+contactsRouter.get("/", controllerWrapp(listContacts));
 
-contactsRouter.get("/", getAllContacts);
+contactsRouter.get("/:id", controllerWrapp(getContactById));
 
-contactsRouter.get("/:id", getOneContact);
+contactsRouter.delete("/:id", controllerWrapp(removeContact));
 
-contactsRouter.delete("/:id", deleteContact);
+contactsRouter.post(
+  "/",
+  validateBody(createContactSchema),
+  controllerWrapp(addContact)
+);
 
-contactsRouter.post("/",validateBody(createContactSchema), createContact);
+contactsRouter.put(
+  "/:id",
+  validateBody(updateContactSchema),
+  controllerWrapp(updateContact)
+);
 
-contactsRouter.put("/:id",validateBody(updateContactSchema), updateContact);
+contactsRouter.put(
+  "/:id/favorite",
+  validateBody(updateStatusSchema),
+  controllerWrapp(updateStatus)
+);
 
 module.exports = contactsRouter;
