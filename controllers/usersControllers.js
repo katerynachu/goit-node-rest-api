@@ -1,24 +1,36 @@
 const { User } = require("../models/user");
-const { HttpError } = require("../helpers/HttpError");
+const HttpError = require("../helpers/HttpError");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const gravatar = require("gravatar");
+const path = require("path");
+const jimp = require("jimp");
+const fs = require("fs/promises");
+
+
 
 const registerUser = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
 
   if (user) {
-    throw new HttpError('409', "Email already in use");
+    throw new HttpError("409", "Email already in use");
   }
 
   const hashPassword = await bcrypt.hash(password, 10);
+  const avatarURL = gravatar.url(email, { s: "200", d: "retro" }, true);
 
-  const newUser = await User.create({ ...req.body, password: hashPassword });
+  const newUser = await User.create({
+    ...req.body,
+    password: hashPassword,
+    avatarURL,
+  });
 
   res.status(201).json({
     user: {
       email: newUser.email,
       subscription: newUser.subscription,
+      avatarURL: newUser.avatarURL,
     },
   });
 };
@@ -65,11 +77,12 @@ const logoutUser = async(req, res)=> {
 
   res.status(204).end();
 }
+
 const getCurrentUser= async(req, res) =>{
   const currentUser = req.user;
 
   if (!currentUser) {
-    throw HttpError('401', "Not authorized");
+    throw new HttpError('401', "Not authorized");
   }
 
   res.status(200).json({
@@ -78,9 +91,40 @@ const getCurrentUser= async(req, res) =>{
   });
 }
 
+const avatarsDir = path.join(__dirname, "../", "public", "avatars");
+
+const updateUserAvatar = async (req, res) => {
+  const { _id } = req.user;
+  const { path: tempUpload, originalname } = req.file;
+
+  try {
+    const filename = `${_id}_${originalname}`;
+
+    const resultUpload = path.join(avatarsDir, filename);
+
+    await jimp.read(tempUpload).then(image => {
+      return image.resize(250, 250).write(resultUpload);
+    });
+
+    await fs.rename(tempUpload, resultUpload);
+
+    const avatarURL = path.join("avatars", filename);
+
+    await User.findByIdAndUpdate(_id, { avatarURL });
+
+    res.status(200).json({
+      avatarURL,
+    });
+  } catch (error) {
+    console.error("Error updating user avatar:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   registerUser,
   loginUser,
   logoutUser,
   getCurrentUser,
+  updateUserAvatar,
 };
