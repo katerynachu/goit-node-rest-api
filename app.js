@@ -8,25 +8,13 @@ const usersRouter = require("./routers/usersRouter");
 
 const app = express();
 
-app.use("/public", express.static("public"));
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
+app.use(express.static("public"));
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/avatars");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.originalname);
-  },
-});
 
-const upload = multer({ storage: storage });
 
-app.post("/api/avatars", upload.single("avatar"), (req, res) => {
-  res.json({ message: "Avatar uploaded successfully" });
-});
 app.use("/api/contacts", contactsRouter);
 app.use("/api/users", usersRouter); 
 
