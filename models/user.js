@@ -4,11 +4,11 @@ const Joi = require("joi");
 const userSchema = Schema({
   password: {
     type: String,
-    required: [true, 'Set password for user'],
+    required: [true, "Set password for user"],
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: [true, "Email is required"],
     unique: true,
   },
   subscription: {
@@ -17,6 +17,7 @@ const userSchema = Schema({
     default: "starter",
   },
   token: String,
+  avatarURL: String,
 });
 
 const registerUserSchema = Joi.object({
