@@ -8,9 +8,11 @@ const {
   loginUser,
   logoutUser,
   getCurrentUser,
-  updateUserAvatar
+  updateUserAvatar,
+  verifyEmail,
+  resendVerificationEmail,
 } = require("../controllers/usersControllers.js");
-const { registerUserSchema, loginSchema } = require("../models/user.js");
+const { registerUserSchema, loginSchema,validateSchema } = require("../models/user.js");
 const authChecker = require("../helpers/authChecker");
 
 router.post(
@@ -19,14 +21,17 @@ router.post(
   controllerWrapper(registerUser)
 );
 
-router.post(
-  "/login",
-  validateBody(loginSchema),
-  controllerWrapper(loginUser)
-);
+router.post("/login", validateBody(loginSchema), controllerWrapper(loginUser));
 router.post("/logout", authChecker, controllerWrapper(logoutUser));
 router.get("/current", authChecker, controllerWrapper(getCurrentUser));
-router.patch("/avatars", authChecker, upload.single("avatar"), controllerWrapper(updateUserAvatar));
+router.patch(
+  "/avatars",
+  authChecker,
+  upload.single("avatar"),
+  controllerWrapper(updateUserAvatar)
+);
 
+router.get("/verify/:verificationToken", controllerWrapper(verifyEmail));
+router.post("/verify", validateBody(validateSchema), controllerWrapper(resendVerificationEmail));
 
 module.exports = router;
