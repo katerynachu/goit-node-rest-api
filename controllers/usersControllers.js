@@ -144,11 +144,6 @@ const verifyEmail = async (req, res) => {
 const resendVerificationEmail = async (req, res) => {
   const { email } = req.body;
 
-  if (!email) {
-    return res.status(400).json({ message: "missing required field email" });
-  }
-
-  try {
     const user = await User.findOne({ email });
 
     if (user.verify) {
@@ -160,11 +155,7 @@ const resendVerificationEmail = async (req, res) => {
     await sendEmail(user.email, user.verificationToken);
 
     return res.status(200).json({ message: "Verification email sent" });
-  } catch (error) {
-    console.error("Error resending verification email:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
+  };
 module.exports = {
   registerUser,
   loginUser,

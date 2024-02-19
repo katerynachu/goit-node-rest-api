@@ -12,7 +12,7 @@ const {
   verifyEmail,
   resendVerificationEmail,
 } = require("../controllers/usersControllers.js");
-const { registerUserSchema, loginSchema } = require("../models/user.js");
+const { registerUserSchema, loginSchema,validateSchema } = require("../models/user.js");
 const authChecker = require("../helpers/authChecker");
 
 router.post(
@@ -32,6 +32,6 @@ router.patch(
 );
 
 router.get("/verify/:verificationToken", controllerWrapper(verifyEmail));
-router.post("/verify", controllerWrapper(resendVerificationEmail));
+router.post("/verify", validateBody(validateSchema), controllerWrapper(resendVerificationEmail));
 
 module.exports = router;
